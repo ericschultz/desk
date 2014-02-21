@@ -28,15 +28,18 @@ const int KEYPAD_COLS = 3;
 
 //actuator
 const int EXTEND_ACTUATOR_PIN = 0;
-const int RETRACT_ACTUATOR_PIN =  0;
-const int POSITION_ACTUATOR_PIN =  0;
+const int RETRACT_ACTUATOR_PIN =  1;
+const int POSITION_ACTUATOR_PIN =  //A0;
 
 
 //lcd
-const int LCD_REGISTER_SELECT_PIN = 0;
-const int LCD_RW_PIN = 0;
-const int LCD_ENABLE_PIN = 0;
-
+const int LCD_REGISTER_SELECT_PIN = 2;
+const int LCD_RW_PIN = 3;
+const int LCD_ENABLE_PIN = 4;
+const int LCD_D4 =5;
+const int LCD_D5=6;
+const int LCD_D6 =7 ;
+const int LCD_D7=8;
 
 // keypad
 const int UP_BUTTON_PIN= 0;
@@ -69,8 +72,18 @@ Actuator actuator = Actuator(EXTEND_ACTUATOR_PIN, RETRACT_ACTUATOR_PIN, POSITION
 int minimum_height_in_mm = 0;
 int maximium_height_in_mm = 0;
  
+bool didTransitionOccur = false;
+TransitionOccured currentTransition;
+ 
  
 int saved_setting_values[] = { 0, 341, 682, 1023};
+
+typedef struct {
+	char key;
+	KeyState fromState;
+	KeyState toState;
+} TransitionOccurred;
+
 
 void setup()
 {
@@ -83,8 +96,25 @@ void setup()
 void loop()
 {
 	//just run us
+	//need to run 
 	keypad.getKeys();
-	//if we need to handle a keyPress
+	
+	//if we need to handle a keyPress, we do it here
+	if (didTransitionOccur)
+	{
+		switch (currentTransition.key)
+		{
+			case 'U':
+				    
+					break;			
+			case 'D':
+					break;
+			default:
+					
+		}//keypress handling
+	}
+	//clear our transition state
+	clearTransitionState();
 }
 
 void load_setting(byte saved_setting_number)
@@ -153,8 +183,19 @@ int hasEverBeenSavedLocation(byte savedSettingNumber)
 	return (savedSettingNumber + HAS_SETTING_EVER_BEEN_SAVED_LOCATION) *sizeof(int);
 }
 
+
+
 void handle_transition(char key, KeyState from, KeyState to)
 {
+	currentTransition.key = key;
+	currentTransition.fromState = from;
+	currentTransition.toState = to;
+	didTransitionOccur = true;
+}
+
+void clearTransitionState()
+{
+	didTransitionOccur = false;
 }
 
 
