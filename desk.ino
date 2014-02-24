@@ -1,7 +1,8 @@
-#include <LiquidCrystal.h>
+
 #include <EEPROM.h>
 #include <Keypad.h>
 #include "Actuator.h"
+#include "LcdAdapter.h"
 
 
 /** begin non-pin consts **/
@@ -13,6 +14,7 @@ const int HAS_SETTING_EVER_BEEN_SAVED_LOCATION = 4;
 //lcd
 const int NUM_OF_LCD_CHARS = 16;
 const int NUM_OF_LCD_LINES = 2;
+const int MARQUEE_TIME = 5000;
 
 //keypad
 const int KEYPAD_HOLD_TIME = 500;
@@ -42,14 +44,13 @@ const int LCD_D6 =7 ;
 const int LCD_D7=8;
 
 // keypad
-const int UP_BUTTON_PIN= 0;
-const int DOWN_BUTTON_PIN= 0;
 
-const int ROW0_PIN=0;
-const int ROW1_PIN=0;
-const int COL0_PIN=0;
-const int COL1_PIN= 0;
-const int COL2_PIN =0;
+
+const int ROW0_PIN=9;
+const int ROW1_PIN=10;
+const int COL0_PIN=11;
+const int COL1_PIN= 12;
+const int COL2_PIN =13;
 
 
 /** end pins **/
@@ -105,12 +106,22 @@ void loop()
 		switch (currentTransition.key)
 		{
 			case 'U':
-				    
+				    actuator.goUp();
 					break;			
 			case 'D':
+					actuator.goDown();
 					break;
 			default:
+					//we have something a settings press or hold
+					if(currentTransition.fromState == PRESSED && currentTransition.toState == HOLD)
+					{
+						//we save!
 					
+					}
+					else if(currentTransition.fromState == PRESSED && currentTransition.toState == RELEASED)
+					{
+						//we go to!
+					}
 		}//keypress handling
 	}
 	//clear our transition state
